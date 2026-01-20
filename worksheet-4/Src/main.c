@@ -51,12 +51,13 @@ void BSP_COM_DeInit(UART_HandleTypeDef *);
 void LED2_Toggle(void);
 int __io_putchar(int);
 int __io_getchar(void);
+int __str_len(const char *);
 
 int main(void)
 {
   int i;
   //char hi[13]="Hello World!";
-  char hi[15]="Welcome Joshua!";
+  char hi[17]="Welcome Joshua!\n";
   
 /* STM32L4xx HAL library initialization:
        - Configure the Flash prefetch, Flash preread and Buffer caches
@@ -94,14 +95,25 @@ int main(void)
   /* turn the LED on */
   LED2_On();
     /* loop for ever */
-  for ( i=0; i != 15; i++)
-  //for ( i=0; i != 13; i++)
+  for (i=0; i != 17; i++)
   {
     LED2_On();
-    HAL_Delay(1000);  //delay for 1000 milliseconds - namely 1 second
+    HAL_Delay(100);  //delay for 100 milliseconds
     __io_putchar(hi[i]);
     LED2_Off();
-    HAL_Delay(1000);  //delay for 1000 milliseconds - namely 1 second
+    HAL_Delay(100);  //delay for 100 milliseconds
+  }
+
+  /* Print the length of the 'hi' string */
+  int string_length = __str_len(hi);
+  for (i = 1; i != string_length; i++) {
+    if (i >= 10) {
+      __io_putchar('0' + (i / 10)); // Print the tens digit.
+      __io_putchar('0' + (i % 10)); // Print the units digit.
+    } else {
+      __io_putchar('0' + i); // Print the single digit.
+    }
+    __io_putchar('\n'); // New line.
   }
 
   while(1)
@@ -278,4 +290,15 @@ int __io_getchar(void)
   HAL_UART_Receive(&hDiscoUart, &ch, 1, 30000); // Wait until a character is recieved.
 
   return ch;
+}
+
+int __str_len(const char *s)
+{
+  int len = 0;
+
+  while (s[len] != '\0') {
+    len++;
+  }
+
+  return len;
 }
